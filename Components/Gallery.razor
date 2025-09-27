@@ -1,0 +1,120 @@
+@using BlazorGallery.Services
+@inject ImageService ImageService
+
+<div class="gallery-container">
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (images?.Any() == true)
+    {
+        <div class="row g-3">
+            @foreach (var image in images)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card gallery-item h-100" @onclick="() => OpenLightbox(image)">
+                        <img src="@image.ThumbnailUrl" 
+                             class="card-img-top gallery-thumbnail" 
+                             alt="@image.Title"
+                             loading="lazy" />
+                        <div class="card-body p-2">
+                            <h6 class="card-title text-truncate mb-1">@image.Title</h6>
+                            @if (!string.IsNullOrEmpty(image.Description))
+                            {
+                                <p class="card-text small text-muted text-truncate mb-0">@image.Description</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">No images found.</p>
+        </div>
+    }
+</div>
+
+@if (selectedImage != null)
+{
+    <Lightbox Image="selectedImage" 
+              Images="images!" 
+              OnClose="CloseLightbox" 
+              OnNavigate="NavigateToImage" />
+}
+
+@code {
+    private List<ImageInfo>? images;
+    private ImageInfo? selectedImage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadImages();
+    }
+
+    private async Task LoadImages()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        images = await ImageService.GetImagesAsync();
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private void OpenLightbox(ImageInfo image)
+    {
+        selectedImage = image;
+        StateHasChanged();
+    }
+
+    private void CloseLightbox()
+    {
+        selectedImage = null;
+        StateHasChanged();
+    }
+
+    private void NavigateToImage(ImageInfo image)
+    {
+        selectedImage = image;
+        StateHasChanged();
+    }
+}
+
+<style>
+    .gallery-container {
+        padding: 1rem;
+    }
+
+    .gallery-item {
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-thumbnail {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .card-text {
+        font-size: 0.8rem;
+    }
+</style>

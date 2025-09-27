@@ -1,0 +1,23 @@
+[
+  {
+    "filename": "sample1.jpg",
+    "title": "Blue Gradient",
+    "description": "A beautiful blue to cyan gradient",
+    "tags": ["gradient", "blue", "cyan"],
+    "dateCreated": "2024-01-01T00:00:00Z"
+  },
+  {
+    "filename": "sample2.jpg",
+    "title": "Red Gradient",
+    "description": "A warm red to yellow gradient",
+    "tags": ["gradient", "red", "yellow"],
+    "dateCreated": "2024-01-02T00:00:00Z"
+  },
+  {
+    "filename": "sample3.jpg",
+    "title": "Green Gradient",
+    "description": "A fresh green to lime gradient",
+    "tags": ["gradient", "green", "lime"],
+    "dateCreated": "2024-01-03T00:00:00Z"
+  }
+]

@@ -1,0 +1,245 @@
+@using BlazorGallery.Services
+
+<div class="lightbox-overlay" @onclick="CloseOnOverlayClick" @onkeydown="HandleKeyDown" tabindex="0">
+    <div class="lightbox-content" @onclick:stopPropagation="true">
+        <!-- Close button -->
+        <button class="btn-close lightbox-close" @onclick="OnClose" aria-label="Close"></button>
+        
+        <!-- Navigation buttons -->
+        @if (CanNavigatePrevious())
+        {
+            <button class="lightbox-nav lightbox-nav-prev" @onclick="NavigatePrevious" aria-label="Previous image">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        }
+        
+        @if (CanNavigateNext())
+        {
+            <button class="lightbox-nav lightbox-nav-next" @onclick="NavigateNext" aria-label="Next image">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        }
+        
+        <!-- Main image -->
+        <div class="lightbox-image-container">
+            <img src="@Image.Url" 
+                 alt="@Image.Title" 
+                 class="lightbox-image" />
+        </div>
+        
+        <!-- Image info -->
+        <div class="lightbox-info">
+            <h5 class="lightbox-title">@Image.Title</h5>
+            @if (!string.IsNullOrEmpty(Image.Description))
+            {
+                <p class="lightbox-description">@Image.Description</p>
+            }
+            @if (Image.Tags?.Any() == true)
+            {
+                <div class="lightbox-tags">
+                    @foreach (var tag in Image.Tags)
+                    {
+                        <span class="badge bg-secondary me-1">@tag</span>
+                    }
+                </div>
+            }
+            <div class="lightbox-meta">
+                <small class="text-muted">
+                    @Image.DateCreated.ToString("MMMM d, yyyy")
+                    • Image @(GetCurrentIndex() + 1) of @Images.Count
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public ImageInfo Image { get; set; } = default!;
+    [Parameter] public List<ImageInfo> Images { get; set; } = new();
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<ImageInfo> OnNavigate { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Focus the lightbox for keyboard navigation
+            await Task.Delay(100); // Small delay to ensure DOM is ready
+            StateHasChanged();
+        }
+    }
+
+    private void CloseOnOverlayClick()
+    {
+        OnClose.InvokeAsync();
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key.ToLower())
+        {
+            case "escape":
+                await OnClose.InvokeAsync();
+                break;
+            case "arrowleft":
+                if (CanNavigatePrevious())
+                    NavigatePrevious();
+                break;
+            case "arrowright":
+                if (CanNavigateNext())
+                    NavigateNext();
+                break;
+        }
+    }
+
+    private int GetCurrentIndex()
+    {
+        return Images.FindIndex(i => i.Filename == Image.Filename);
+    }
+
+    private bool CanNavigatePrevious()
+    {
+        return GetCurrentIndex() > 0;
+    }
+
+    private bool CanNavigateNext()
+    {
+        return GetCurrentIndex() < Images.Count - 1;
+    }
+
+    private void NavigatePrevious()
+    {
+        var currentIndex = GetCurrentIndex();
+        if (currentIndex > 0)
+        {
+            var previousImage = Images[currentIndex - 1];
+            OnNavigate.InvokeAsync(previousImage);
+        }
+    }
+
+    private void NavigateNext()
+    {
+        var currentIndex = GetCurrentIndex();
+        if (currentIndex < Images.Count - 1)
+        {
+            var nextImage = Images[currentIndex + 1];
+            OnNavigate.InvokeAsync(nextImage);
+        }
+    }
+}
+
+<style>
+    .lightbox-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+        outline: none;
+    }
+
+    .lightbox-content {
+        position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        z-index: 1060;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        z-index: 1060;
+    }
+
+    .lightbox-nav:hover {
+        background-color: rgba(255, 255, 255, 1);
+    }
+
+    .lightbox-nav-prev {
+        left: -60px;
+    }
+
+    .lightbox-nav-next {
+        right: -60px;
+    }
+
+    .lightbox-image-container {
+        max-width: 80vw;
+        max-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lightbox-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-info {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        max-width: 80vw;
+        text-align: center;
+    }
+
+    .lightbox-title {
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .lightbox-description {
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+
+    .lightbox-tags {
+        margin-bottom: 0.5rem;
+    }
+
+    .lightbox-meta {
+        margin-bottom: 0;
+    }
+
+    .lightbox-meta {
+        margin-bottom: 0;
+    }
+</style>

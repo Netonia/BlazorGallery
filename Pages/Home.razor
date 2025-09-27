@@ -1,0 +1,33 @@
+﻿@page "/"
+@using BlazorGallery.Components
+@using BlazorGallery.Services
+
+<PageTitle>Photo Gallery</PageTitle>
+
+<Navbar OnSearchChanged="HandleSearch" 
+        OnSortChanged="HandleSort" 
+        OnThemeChanged="HandleThemeChange" />
+
+<div class="container-fluid">
+    <Gallery />
+</div>
+
+@code {
+    private void HandleSearch(string searchTerm)
+    {
+        // TODO: Implement search functionality
+        Console.WriteLine($"Search: {searchTerm}");
+    }
+
+    private void HandleSort(SortOrder sortOrder)
+    {
+        // TODO: Implement sorting functionality
+        Console.WriteLine($"Sort: {sortOrder}");
+    }
+
+    private void HandleThemeChange(bool isDark)
+    {
+        // TODO: Implement theme changing
+        Console.WriteLine($"Dark theme: {isDark}");
+    }
+}
