@@ -7,22 +7,21 @@
             Photo Gallery
         </a>
         
-        <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu" aria-expanded="@(!collapseNavMenu)">
+        @* <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu" aria-expanded="@(!collapseNavMenu)">
             <span class="navbar-toggler-icon"></span>
-        </button>
+        </button> *@
         
         <div class="@NavMenuCssClass navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            @* <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" href="/">
                         <i class="bi bi-grid-3x3-gap"></i>
                         Gallery
                     </a>
                 </li>
-            </ul>
+            </ul> *@
             
-            <!-- Search and controls -->
-            <div class="d-flex align-items-center">
+            @* <div class="d-flex align-items-center">
                 <div class="input-group me-3" style="width: 300px;">
                     <span class="input-group-text">
                         <i class="bi bi-search"></i>
@@ -40,7 +39,6 @@
                     }
                 </div>
                 
-                <!-- Sort dropdown -->
                 <div class="dropdown me-3">
                     <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="bi bi-sort-down"></i>
@@ -59,11 +57,10 @@
                     </ul>
                 </div>
                 
-                <!-- Theme toggle -->
                 <button class="btn btn-outline-light" @onclick="ToggleTheme" title="Toggle theme">
                     <i class="bi @(isDarkTheme ? "bi-sun" : "bi-moon")"></i>
                 </button>
-            </div>
+            </div> *@
         </div>
     </div>
 </nav>
